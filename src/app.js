@@ -8,7 +8,9 @@ const uid = require('uid');
 const $ = require('jquery');
 const openStream = require('./openStream');
 const playVideo = require('./playVideo');
+const io = require('socket.io-client');
 
+const socket = io('http://localhost:3000');
 
 function getPeer() {
     const id = uid(5);
@@ -33,23 +35,24 @@ var httpreq = https.request(options, function(httpres) {
     httpres.on("data", function(data){ str += data; });
     httpres.on("error", function(e){ console.log("error: ",e); });
     httpres.on("end", function(){
-    console.log("response: ", str);
+    //console.log("response: ", str);
     });
 });
 
 httpreq.end();
 
+const peerID = getPeer();
+socket.emit('NEW_PEER_ID', peerID);
+const peer = new Peer(peerID);
 
-const peer = new Peer(getPeer());
-
-$('#btnCall').click(() => {
-    const frID = $('#txtFriendID').val();
-    openStream(stream => {
-        playVideo(stream, 'myStream');
-        const call = peer.call(frID, stream);
-        call.on('stream', remoteStream => playVideo(remoteStream, 'frStream'));
-    });
-});
+//$('#btnCall').click(() => {
+//    const frID = $('#txtFriendID').val();
+//    openStream(stream => {
+//        playVideo(stream, 'myStream');
+//        const call = peer.call(frID, stream);
+//        call.on('stream', remoteStream => playVideo(remoteStream, 'frStream'));
+//    });
+//});
 
 peer.on('call', (call) => {
     openStream(stream => {
@@ -59,10 +62,25 @@ peer.on('call', (call) => {
     });
 });
 
+socket.on('ONLINE_PEER', arrPeerID => {
+    arrPeerID.forEach((id) => {
+        $('#ulPeerID').append(`<li id="${id}">${id}</li>`);
+    });
+});
 
+socket.on('SOMEONE_DISCONNECTED', peerID => {
+   $(`#${peerID}`).remove();
+});
 
+socket.on('NEW_CLIENT_CONNECT', id => $('#ulPeerID').append(`<li id="${id}">${id}</li>`));
 
-
-
+$('#ulPeerID').on('click', 'li', function (){
+    const peerID = $(this).text();
+    openStream(stream => {
+        playVideo(stream, 'myStream');
+        const call = peer.call(peerID, stream);
+        call.on('stream', remoteStream => playVideo(remoteStream, 'frStream'));
+    });
+});
 
 
