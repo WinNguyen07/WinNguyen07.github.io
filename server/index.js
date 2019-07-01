@@ -3,9 +3,6 @@ const io = require('socket.io')(3000);
 const arrPeerID = [];
 
 io.on('connection', socket => {
-    const isExist = arrPeerID
-    
-    
     socket.emit('ONLINE_PEER', arrPeerID);
     
     socket.on('NEW_PEER_ID', peerID => {
