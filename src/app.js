@@ -10,7 +10,7 @@ const openStream = require('./openStream');
 const playVideo = require('./playVideo');
 const io = require('socket.io-client');
 
-const socket = io('https://webrtcdemo2019.herokuapp.com');
+const socket = io('https://webrtc072019.herokuapp.com/');
 
 function getPeer() {
     const id = uid(5);
