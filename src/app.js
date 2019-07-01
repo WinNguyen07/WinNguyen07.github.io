@@ -11,7 +11,7 @@ const playVideo = require('./playVideo');
 
 
 function getPeer() {
-    const id = uid(10);
+    const id = uid(5);
     $('#peer-id').append(id);
     return id;    
 }
