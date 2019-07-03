@@ -8,7 +8,8 @@ and open the template in the editor.
     <head>
         <title>Demo</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    </head>
+        <link rel="stylesheet" type="text/css" href="dangnhap.css">
+    </head>    
     <script>    
         window.onbeforeunload = function() {
            return "Do you really want to leave our brilliant application?";           
@@ -16,23 +17,22 @@ and open the template in the editor.
     </script>
     <body>
         <div id="div-chat">
-            <p>Online user:</p>
-            <ul id="ulUser">
-            </ul>
-            <h3 id="my-peer">Your Id: </h3>
-            <video id="localStream" width="300" controls></video>
-            <br /><br />
-            <video id="remoteStream" width="300" controls></video>
-            <br /><br />
-            <input type="text" id="remoteId" placeholder="Remote ID">
-            <button id="btnCall">Call</button>
+            <aside style="font-style:italic; float:right; width:20%; border:1px solid">
+                <p style="margin-left: 5px"><b>Danh sách trực truyến</b></p>
+                <ul id="ulUser">
+                </ul>            
+            </aside>
+            <video id="localStream" width="500" height="350" controls></video>
+            
+            <video id="remoteStream" width="300" controls></video>            
         </div>
         <div id="div-dang-ky">
-            <br /><br />
-            <input type="text" id="txtUsername" placeholder="Enter your username">
-            <button id="btnSignUp">Sign Up</button>
+            <form>    
+                <h1>Đăng ký</h1>
+                <input placeholder="Tên đăng nhập" type="text" required="" id="txtUsername">                
+                <input id="btnSignUp" value="Đăng ký" type="button"/>
+            </form>
         </div>
     </body>
     <script src="dist/bundle.js"></script>
-    
 </html>
