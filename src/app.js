@@ -39,8 +39,7 @@ httpreq.end();
 const peerID = getPeer();
 const peer = new Peer(peerID);
 
-peer.on('open', id => {
-    $('#my-peer').append(id);
+peer.on('open', id => {    
     $('#btnSignUp').click(() => {
         const username = $('#txtUsername').val();        
         socket.emit('NGUOI_DUNG_DANG_KY', { ten: username, peerId: id });
