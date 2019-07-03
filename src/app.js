@@ -1,8 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import Peer from 'peerjs';
 const uid = require('uid');
 const $ = require('jquery');
@@ -10,16 +5,16 @@ const openStream = require('./openStream');
 const playVideo = require('./playVideo');
 const io = require('socket.io-client');
 
-const socket = io('https://webrtc072019.herokuapp.com/');
+const socket = io('https://webrtc072019.herokuapp.com');
+
+$('#div-chat').hide();
 
 function getPeer() {
-    const id = uid(5);
-    $('#peer-id').append(id);
+    const id = uid(5);    
     return id;    
 }
 
 //This example shows you how simple it is to get your ICE credentials
-
 var https = require("https");
 var options = {
     host: "global.xirsys.net",
@@ -42,45 +37,50 @@ var httpreq = https.request(options, function(httpres) {
 httpreq.end();
 
 const peerID = getPeer();
-socket.emit('NEW_PEER_ID', peerID);
 const peer = new Peer(peerID);
 
-//$('#btnCall').click(() => {
-//    const frID = $('#txtFriendID').val();
-//    openStream(stream => {
-//        playVideo(stream, 'myStream');
-//        const call = peer.call(frID, stream);
-//        call.on('stream', remoteStream => playVideo(remoteStream, 'frStream'));
-//    });
-//});
+peer.on('open', id => {
+    $('#my-peer').append(id);
+    $('#btnSignUp').click(() => {
+        const username = $('#txtUsername').val();        
+        socket.emit('NGUOI_DUNG_DANG_KY', { ten: username, peerId: id });
+    });
+});
 
 peer.on('call', (call) => {
-    openStream(stream => {
-        playVideo(stream, 'myStream');
-        call.answer(stream);
-        call.on('stream', remoteStream => playVideo(remoteStream, 'frStream'));
+        openStream(stream => {
+            playVideo(stream, 'localStream');
+            call.answer(stream);    
+            call.on('stream', remoteStream => playVideo(remoteStream, 'remoteStream'));
+        });
+});
+
+socket.on('DANH_SACH_ONLINE', arrUserInfo => {
+    $('#div-chat').show();
+    $('#div-dang-ky').hide();
+
+    arrUserInfo.forEach(user => {
+        const { ten, peerId } = user;
+        $('#ulUser').append(`<li id="${peerId}">${ten}</li>`);
+    });
+
+    socket.on('CO_NGUOI_DUNG_MOI', user => {
+        const { ten, peerId } = user;
+        $('#ulUser').append(`<li id="${peerId}">${ten}</li>`);
+    });
+
+    socket.on('AI_DO_NGAT_KET_NOI', peerId => {
+        $(`#${peerId}`).remove();
     });
 });
 
-socket.on('ONLINE_PEER', arrPeerID => {
-    arrPeerID.forEach((id) => {
-        $('#ulPeerID').append(`<li id="${id}">${id}</li>`);
-    });
-});
-
-socket.on('SOMEONE_DISCONNECTED', peerID => {
-   $(`#${peerID}`).remove();
-});
-
-socket.on('NEW_CLIENT_CONNECT', id => $('#ulPeerID').append(`<li id="${id}">${id}</li>`));
-
-$('#ulPeerID').on('click', 'li', function (){
-    const peerID = $(this).text();
+socket.on('DANG_KY_THAT_BAT', () => alert('Vui lòng chọn username khác!'));
+    
+$('#ulUser').on('click', 'li', function (){
+    const peerID = $(this).attr('id');
     openStream(stream => {
-        playVideo(stream, 'myStream');
+        playVideo(stream, 'localStream');
         const call = peer.call(peerID, stream);
-        call.on('stream', remoteStream => playVideo(remoteStream, 'frStream'));
+        call.on('stream', remoteStream => playVideo(remoteStream, 'remoteStream'));
     });
 });
-
-
