@@ -52,3 +52,9 @@ input:focus::-webkit-input-placeholder, input:valid::-webkit-input-placeholder {
   transform: translateY(-3px);
   box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.2);
 }
+
+video {
+	background: #ccc;
+	bolder: 10px solid #ddd;
+	margin: 0 auto;
+}
